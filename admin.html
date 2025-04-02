@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Da&Sa Cafe Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-6 min-h-screen">
+
+  <!-- Giriş yapan kullanıcı -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">☕ Admin Panel</h1>
+    <div>
+      <span id="welcomeUser" class="mr-4 text-green-400 font-semibold"></span>
+      <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Çıkış</button>
+    </div>
+  </div>
+
+  <form id="productForm" class="space-y-4 bg-gray-800 p-4 rounded mb-6">
+    <input type="text" id="name" placeholder="Ürün Adı" class="w-full p-2 rounded bg-white text-black" required />
+    <select id="category" class="w-full p-2 rounded bg-white text-black" required>
+      <option value="">Kategori Seç</option>
+      <option value="Yemek">Yemek</option>
+      <option value="Tatlı">Tatlı</option>
+      <option value="Oyun">Oyun</option>
+      <option value="Sıcak İçecek">Sıcak İçecek</option>
+      <option value="Soğuk İçecek">Soğuk İçecek</option>
+      <option value="Nargile">Nargile</option>
+    </select>
+    <input type="number" id="price" placeholder="Fiyat" class="w-full p-2 rounded bg-white text-black" required />
+    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded">Ekle / Güncelle</button>
+  </form>
+
+  <h2 class="text-xl mb-2">📋 Ürün Listesi</h2>
+  <div id="productList" class="space-y-2"></div>
+
+  <script>
+    const welcomeEl = document.getElementById("welcomeUser");
+    const username = localStorage.getItem("loggedInUser");
+
+    if (!username) {
+      window.location.href = "login.html";
+    } else {
+      welcomeEl.textContent = `Hoş geldin, ${username}`;
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    let editingIndex = null;
+
+    document.getElementById("productForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const category = document.getElementById("category").value;
+      const price = parseFloat(document.getElementById("price").value);
+
+      if (!name || !category || isNaN(price)) {
+        alert("Lütfen geçerli bilgiler girin.");
+        return;
+      }
+
+      const product = { name, category, price };
+
+      if (editingIndex === null) {
+        products.push(product);
+      } else {
+        products[editingIndex] = product;
+        editingIndex = null;
+      }
+
+      localStorage.setItem("products", JSON.stringify(products));
+      this.reset();
+      renderProducts();
+    });
+
+    function renderProducts() {
+      const list = document.getElementById("productList");
+      list.innerHTML = "";
+
+      products.forEach((product, index) => {
+        const item = document.createElement("div");
+        item.className = "bg-gray-700 p-3 rounded flex justify-between items-center";
+        item.innerHTML = `
+          <div>
+            <strong>${product.name}</strong> (${product.category}) - ${product.price} TL
+          </div>
+          <div class="space-x-2">
+            <button onclick="editProduct(${index})" class="bg-blue-500 px-2 py-1 rounded">Düzenle</button>
+            <button onclick="deleteProduct(${index})" class="bg-red-500 px-2 py-1 rounded">Sil</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function editProduct(index) {
+      const product = products[index];
+      document.getElementById("name").value = product.name;
+      document.getElementById("category").value = product.category;
+      document.getElementById("price").value = product.price;
+      editingIndex = index;
+    }
+
+    function deleteProduct(index) {
+      if (confirm("Bu ürünü silmek istediğine emin misin?")) {
+        products.splice(index, 1);
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+      }
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
+    

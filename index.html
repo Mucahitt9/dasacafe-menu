@@ -3,30 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dasacafe Menü</title>
+  <title>Da&Sa CAFE GAME</title>
   <link rel="icon" type="image/jpeg" href="images/dasacafegame.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-yellow-400 font-sans p-4">
+<body class="bg-black text-yellow-400 dark:bg-dark-400 dark:text-white">
   <div class="fixed inset-0 bg-black text-yellow-400 flex items-center justify-center text-2xl z-50 animate-fadeOut delay-[2000ms]"><img src="./images/dasacafegame.jpg" alt="Dasacafe Logo" class="w-48 rounded-xl">🎮 Dasacafe'ye Hoş Geldiniz ☕</div>
-
+  <div class="flex justify-end px-6 pt-4">
+    <a href="login.html" class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition font-semibold">Admin Panel</a>
+  </div>
+  
   <div class="flex justify-center mb-6">
     <img src="./images/dasacafegame.jpg" alt="Dasacafe Logo" class="w-48 rounded-xl">
   </div>
 
-  <h1 class="text-3xl text-center border-b-2 border-yellow-400 pb-2 mb-8">Dasacafe Menü</h1>
+  <h1 class="text-3xl text-center border-b-2 border-yellow-400 pb-2 mb-8">Da&Sa CAFE GAME MENÜ</h1>
+  <div class="flex justify-center mb-8">
+    <input type="text" id="searchInput" placeholder="Menüde ara..." class="w-full max-w-md px-4 py-2 rounded bg-white text-black" />
+  </div>
+  
 
   <section class="mb-8">
     <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">Yemekler</h2>
+    <div id="category-Yemek" class="space-y-2"></div>
     <div class="space-y-2">
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Tavuk Burger</span><span>250 TL</span></div>
-      <div class="flex justify-between border-b border-gray-700 py-2"><span>Karışık Pizza</span><span>200 TL</span></div>
-      <div class="flex justify-between border-b border-gray-700 py-2"><span>Lahmacun</span><span>50 TL</span></div>
     </div>
   </section>
+  
 
   <section class="mb-8">
     <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">Sıcak İçecekler</h2>
+    <div id="category-Sıcak İçecek" class="space-y-2"></div>
     <div class="space-y-2">
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Çay</span><span>25 TL</span></div>
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Kahve</span><span>25 TL</span></div>
@@ -38,6 +46,7 @@
 
   <section class="mb-8">
     <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">Soğuk İçecekler</h2>
+    <div id="category-Soğuk İçecek" class="space-y-2"></div>
     <div class="space-y-2">
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Coca Cola</span><span>40 TL</span></div>
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Sprite</span><span>40 TL</span></div>
@@ -48,6 +57,7 @@
 
   <section class="mb-8">
     <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">Tatlılar</h2>
+    <div id="category-Tatlı" class="space-y-2"></div>
     <div class="space-y-2">
       <div class="flex justify-between border-b border-gray-700 py-2"><span>CheeseCake</span><span>120 TL</span></div>
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Browni</span><span>120 TL</span></div>
@@ -58,6 +68,7 @@
 
   <section class="mb-8">
     <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">Nargile</h2>
+    <div id="category-Nargile" class="space-y-2"></div>
     <div class="space-y-2">
       <div class="flex justify-between border-b border-gray-700 py-2"><span>Meyveli Nargile</span><span>250 TL</span></div>
     </div>
@@ -65,6 +76,7 @@
 
   <section class="mb-8">
     <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">🎯 Oyunlar</h2>
+    <div id="category-Oyun" class="space-y-2"></div>
     <div class="space-y-2">
       <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 py-2">
         <div class="flex items-center gap-2"><img src="images/101-okey-icon.png" class="w-6 h-6"> <strong>Okey</strong> <span class="text-sm text-gray-400">Arkadaşlarınla keyifli vakit geçir!</span></div>
@@ -116,5 +128,73 @@
       }
     }
   </style>
+ <script>
+  const themeBtn = document.getElementById("themeToggle");
+
+themeBtn?.addEventListener("click", () => {
+  const html = document.documentElement;
+  html.classList.toggle("dark");
+
+  // Tema tercihini localStorage’a kaydet
+  if (html.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+});
+
+// Sayfa açıldığında tercih edilen tema yüklensin
+window.addEventListener("DOMContentLoaded", () => {
+  const preferred = localStorage.getItem("theme");
+  if (preferred === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+});
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const categories = [
+      "Yemek",
+      "Tatlı",
+      "Oyun",
+      "Sıcak İçecek",
+      "Soğuk İçecek",
+      "Nargile"
+    ];
+
+    categories.forEach(category => {
+      const container = document.getElementById(`category-${category}`);
+      if (container) container.innerHTML += '';
+    });
+
+    const products = JSON.parse(localStorage.getItem("products")) || [];
+
+    products.forEach(product => {
+      const wrapper = document.getElementById(`category-${product.category}`);
+      if (wrapper) {
+        const item = document.createElement("div");
+        item.className = "flex justify-between border-b border-gray-700 py-2";
+        item.innerHTML = `<span>${product.name}</span><span>${product.price} TL</span>`;
+        wrapper.appendChild(item);
+      }
+    });
+  });
+  document.getElementById("searchInput").addEventListener("input", function () {
+  const search = this.value.toLowerCase();
+  const items = document.querySelectorAll("section div.flex.justify-between");
+
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(search) ? "flex" : "none";
+  });
+});
+</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </body>
 </html>

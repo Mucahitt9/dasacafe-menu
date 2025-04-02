@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Giriş</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen relative">
+
+  <div class="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-4 text-center">🔐 Admin Girişi</h2>
+    <form id="loginForm" class="space-y-4">
+      <input type="text" id="username" placeholder="Kullanıcı Adı" class="w-full p-2 rounded bg-white text-black" required />
+      <input type="password" id="password" placeholder="Şifre" class="w-full p-2 rounded bg-white text-black" required />
+      <button type="submit" class="w-full bg-yellow-500 text-black font-bold py-2 rounded hover:bg-yellow-600">Giriş Yap</button>
+    </form>
+    <p id="error" class="text-red-500 text-sm mt-3 text-center hidden">Kullanıcı adı veya şifre hatalı!</p>
+  </div>
+
+  <!-- Hoş geldin mesajı -->
+  <div id="welcomeBox" class="absolute top-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded shadow-md hidden transition duration-300">
+    Hoş geldin!
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const users = [
+        { username: "Admin", password: "admin" },
+        { username: "Mücahit", password: "mucahit123" }
+      ];
+
+      const validUser = users.find(user => user.username === username && user.password === password);
+
+      if (validUser) {
+        // Hoş geldin mesajı
+        const box = document.getElementById("welcomeBox");
+        box.textContent = `✅ Giriş yapılıyor... Hoş geldin, ${validUser.username}`;
+        box.classList.remove("hidden");
+
+        // Kullanıcı adını kaydet (localStorage)
+        localStorage.setItem("loggedInUser", validUser.username);
+
+        // Yönlendirme
+        setTimeout(() => {
+          window.location.href = "admin.html";
+        }, 2000);
+      } else {
+        document.getElementById("error").classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>
