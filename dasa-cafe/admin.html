@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Admin Panel - Da&Sa Cafe Game</title>
-  <link rel="icon" href="images/management-icon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="images/management-icon.png" type="image/png" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white p-6 min-h-screen">
 
   <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
     <h1 class="text-3xl font-bold">☕ Admin Panel</h1>
-    <div class="flex gap-2 items-center">
+    <div class="flex flex-wrap gap-2 items-center">
       <span id="welcomeUser" class="text-green-400 font-semibold"></span>
-      <a href="menu.html" class="bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-2 rounded text-sm">Menü Sayfası</a>
+      <a href="index.html" class="bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-2 rounded text-sm">Menü Sayfası</a>
       <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-2 rounded text-sm">Çıkış</button>
     </div>
   </div>
@@ -21,88 +22,99 @@
   <!-- Ürün Formu -->
   <form id="productForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-800 p-4 rounded mb-6">
     <input type="text" id="name" placeholder="Ürün Adı" class="p-2 rounded bg-white text-black" required />
+    
     <select id="category" class="p-2 rounded bg-white text-black" required>
-        <option value="">Kategori Seç</option>
-        <option value="Yemek">Yemek</option>
-        <option value="Tatlı">Tatlı</option>
-        <option value="Oyun">Oyun</option>
-        <option value="Sıcak İçecek">Sıcak İçecek</option>
-        <option value="Soğuk İçecek">Soğuk İçecek</option>
-        <option value="Nargile">Nargile</option>
-      </select>
-          <input type="number" id="price" placeholder="Fiyat" class="p-2 rounded bg-white text-black" required />
-          <input type="file" id="image" accept="image/*" class="p-2 bg-white text-black rounded" />
-          <textarea id="description" placeholder="Açıklama (örnek: ekstra soslu...)" class="md:col-span-2 p-2 rounded bg-white text-black"></textarea>
-    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded md:col-span-2">Ekle / Güncelle</button>
+      <option value="">Kategori Seç</option>
+      <option value="Yemek">Yemek</option>
+      <option value="Tatlı">Tatlı</option>
+      <option value="Oyun">Oyun</option>
+      <option value="Sıcak İçecek">Sıcak İçecek</option>
+      <option value="Soğuk İçecek">Soğuk İçecek</option>
+      <option value="Nargile">Nargile</option>
+    </select>
+
+    <input type="number" id="price" placeholder="Fiyat" class="p-2 rounded bg-white text-black" required />
+    <input type="file" id="image" accept="image/*" class="p-2 bg-white text-black rounded" />
+    <textarea id="description" placeholder="Açıklama (örnek: ekstra soslu...)" class="md:col-span-2 p-2 rounded bg-white text-black"></textarea>
+    
+    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded md:col-span-2">
+      Ekle / Güncelle
+    </button>
   </form>
+
+  <!-- Temizle Butonu -->
+  <div class="flex justify-end mb-4">
+    <button onclick="clearAllProducts()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm shadow">
+      🗑️ Tüm Ürünleri Temizle
+    </button>
+  </div>
 
   <!-- Ürün Listesi -->
   <h2 class="text-xl mb-2">📋 Ürün Listesi</h2>
   <div id="productList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-  <div class="flex justify-end mb-6">
-    <button onclick="clearAllProducts()" 
-            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm shadow transition duration-200">
-      🗑️ Tüm Ürünleri Temizle
-    </button>
-  </div>
-  
-  <!-- JS -->
+
   <script>
     const welcomeEl = document.getElementById("welcomeUser");
     const username = localStorage.getItem("loggedInUser");
-    if (!username) window.location.href = "login.html";
-    else welcomeEl.textContent = `Hoş geldin, ${username}`;
-  
+    if (!username) {
+      window.location.href = "login.html";
+    } else {
+      welcomeEl.textContent = `Hoş geldin, ${username}`;
+    }
+
     let products = JSON.parse(localStorage.getItem("products")) || [];
     let editingIndex = null;
-  
+
     document.getElementById("productForm").addEventListener("submit", function (e) {
       e.preventDefault();
-  
+
       const name = document.getElementById("name").value.trim();
-      const category = document.getElementById("category").value.trim();
+      const category = document.getElementById("category").value;
       const price = parseFloat(document.getElementById("price").value);
       const description = document.getElementById("description").value.trim();
       const imageInput = document.getElementById("image");
-  
+
       if (!name || !category || isNaN(price)) {
         alert("Lütfen geçerli bilgiler girin.");
         return;
       }
-  
-      if (imageInput.files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          saveProduct(e.target.result);
-        };
-        reader.readAsDataURL(imageInput.files[0]);
-      } else {
-        const existingImage = editingIndex !== null ? products[editingIndex].image : "";
-        saveProduct(existingImage);
-      }
-  
-      function saveProduct(imageData) {
-        const product = { name, category, price, image: imageData, description };
+
+      const reader = new FileReader();
+      const saveProduct = (imageData) => {
+        const product = { name, category, price, description, image: imageData };
+
         if (editingIndex === null) {
           products.push(product);
         } else {
           products[editingIndex] = product;
           editingIndex = null;
         }
+
         localStorage.setItem("products", JSON.stringify(products));
-        document.getElementById("productForm").reset();
+        this.reset();
         renderProducts();
+      };
+
+      if (imageInput.files.length > 0) {
+        reader.onload = (e) => saveProduct(e.target.result);
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
+        const existingImage = editingIndex !== null ? products[editingIndex].image : "";
+        saveProduct(existingImage);
       }
     });
-  
+
     function renderProducts() {
       const list = document.getElementById("productList");
       list.innerHTML = "";
+
       products.forEach((product, index) => {
         const item = document.createElement("div");
         item.className = "bg-gray-800 p-4 rounded shadow-md text-sm flex items-start gap-4";
+
         item.innerHTML = `
-          <img src="${product.image || 'https://via.placeholder.com/75'}" class="w-16 h-16 rounded-full object-cover flex-shrink-0" alt="Görsel">
+          <img src="${product.image || 'https://via.placeholder.com/75'}" alt="Görsel"
+               class="w-16 h-16 rounded-full object-cover flex-shrink-0">
           <div class="flex-1">
             <h3 class="text-lg font-bold">${product.name}</h3>
             <p class="text-gray-400 text-xs">${product.category} • ${product.price} TL</p>
@@ -116,7 +128,7 @@
         list.appendChild(item);
       });
     }
-  
+
     function editProduct(index) {
       const product = products[index];
       document.getElementById("name").value = product.name;
@@ -125,7 +137,7 @@
       document.getElementById("description").value = product.description || "";
       editingIndex = index;
     }
-  
+
     function deleteProduct(index) {
       if (confirm("Bu ürünü silmek istediğine emin misin?")) {
         products.splice(index, 1);
@@ -133,21 +145,22 @@
         renderProducts();
       }
     }
+
     function clearAllProducts() {
-  if (confirm("Tüm ürünleri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.")) {
-    products = [];
-    localStorage.setItem("products", JSON.stringify(products));
-    renderProducts();
-    alert("Tüm ürünler başarıyla silindi.");
-  }
-}
+      if (confirm("Tüm ürünleri silmek istediğinizden emin misiniz?")) {
+        products = [];
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+        alert("Tüm ürünler başarıyla silindi.");
+      }
+    }
 
     function logout() {
       localStorage.removeItem("loggedInUser");
       window.location.href = "login.html";
     }
-  
+
     renderProducts();
-  </script>  
+  </script>
 </body>
 </html>

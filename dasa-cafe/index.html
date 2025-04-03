@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Da&Sa CAFE GAME</title>
+  <link rel="icon" href="images/dasacafegame.jpg" type="image/jpeg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <style>
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeOut { animation: fadeOut 1s ease-in-out 2.5s forwards; }
+    .animate-fadeIn { animation: fadeIn 1.2s ease-out; }
+
+    .cat-btn.active {
+      background-color: #000;
+      color: #fff;
+    }
+    .dark .cat-btn.active {
+      background-color: #facc15;
+      color: #000;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-black dark:bg-gray-900 dark:text-white transition-all pb-24">
+
+  <!-- Açılış -->
+  <div class="fixed inset-0 z-50 bg-black text-yellow-400 flex flex-col items-center justify-center text-center px-4 animate-fadeOut delay-[2500ms] space-y-4">
+    <img src="images/dasacafegame.jpg" alt="Logo" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-xl animate-bounce" />
+    <h1 class="text-xl sm:text-2xl font-bold animate-fadeIn">🎮 Dasacafe'ye Hoş Geldiniz ☕</h1>
+    <div class="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+
+  <!-- Üst Menü -->
+  <div class="flex flex-wrap justify-between px-6 pt-4 items-center gap-4">
+    <a href="login.html" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white font-semibold">Admin Panel</a>
+    <button id="themeToggle" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600">🌗 Tema</button>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://seninmenulinkin.com" alt="QR Kod" class="w-10 h-10 rounded-full ml-auto" />
+  </div>
+
+  <!-- Kapalı Mesajı -->
+  <div id="statusMessage" class="text-center mt-4 font-semibold text-red-500 hidden"></div>
+
+  <!-- Logo -->
+  <div class="flex justify-center mb-6 mt-4">
+    <img src="images/dasacafegame.jpg" alt="Dasacafe Logo" class="w-48 rounded-xl">
+  </div>
+
+  <!-- Başlık -->
+  <h1 class="text-3xl text-center border-b-2 border-yellow-400 pb-2 mb-8">Da&Sa CAFE GAME MENÜ</h1>
+
+  <!-- Sabit Mobil Kategori Menüsü -->
+  <div id="categoryMenu" class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 z-40 flex justify-around items-center py-2 sm:static sm:justify-center sm:gap-2 sm:px-4 sm:py-3 sm:mb-6 text-sm font-semibold">
+    <a href="#cat-Yemek" class="cat-btn px-3 py-1 bg-yellow-300 hover:bg-yellow-400 rounded">🍔 Yemek</a>
+    <a href="#cat-Tatlı" class="cat-btn px-3 py-1 bg-pink-200 hover:bg-pink-300 rounded">🍰 Tatlı</a>
+    <a href="#cat-Sıcak İçecek" class="cat-btn px-3 py-1 bg-orange-200 hover:bg-orange-300 rounded">☕ Sıcak</a>
+    <a href="#cat-Soğuk İçecek" class="cat-btn px-3 py-1 bg-blue-200 hover:bg-blue-300 rounded">🧊 Soğuk</a>
+    <a href="#cat-Nargile" class="cat-btn px-3 py-1 bg-green-200 hover:bg-green-300 rounded">💨 Nargile</a>
+    <a href="#cat-Oyun" class="cat-btn px-3 py-1 bg-purple-200 hover:bg-purple-300 rounded">🎯 Oyun</a>
+  </div>
+
+  <!-- Arama -->
+  <div class="flex justify-center mt-6 px-4">
+    <input type="text" id="searchInput" placeholder="Menüde ara..." class="w-full max-w-md px-4 py-2 rounded bg-white text-black shadow" />
+  </div>
+
+  <!-- Kategoriler -->
+  <div id="menuSections" class="mt-6"></div>
+
+  <!-- Footer -->
+  <footer class="text-center mt-10 px-4 py-6 text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+    <p class="leading-relaxed space-y-1">
+      📍 <a href="https://maps.app.goo.gl/piSkq2WhnMRu5q5c9" class="underline hover:text-yellow-500 transition block sm:inline" target="_blank">Konumumuzu Gör</a>
+      <span class="hidden sm:inline">|</span>
+      📸 <a href="https://www.instagram.com/dasa_cafe_game/" class="underline hover:text-yellow-500 transition block sm:inline" target="_blank">Instagram</a>
+      <span class="hidden sm:inline">|</span>
+      ☎️ <a href="tel:+905057098763" class="underline hover:text-yellow-500 transition block sm:inline">0 (505) 709 87 63</a>
+    </p>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    const categories = ['Yemek', 'Tatlı', 'Sıcak İçecek', 'Soğuk İçecek', 'Nargile', 'Oyun'];
+
+    // Tema
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+    });
+
+    // Kapanış kontrolü
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour < 10 || hour > 20) {
+      document.getElementById("statusMessage").classList.remove("hidden");
+      document.getElementById("statusMessage").textContent = "🔴 Şu anda kapalıyız. Açılış: 10:00";
+    }
+
+    // Sayfa yüklenince ürün ve kategori işlemleri
+    window.addEventListener("DOMContentLoaded", () => {
+      const menuSections = document.getElementById("menuSections");
+
+      // Tema ayarla
+      const theme = localStorage.getItem("theme");
+      if (theme === "dark") document.documentElement.classList.add("dark");
+
+      // Kategorileri oluştur
+      categories.forEach(cat => {
+        const section = document.createElement("section");
+        section.id = `cat-${cat}`;
+        section.className = "mb-8";
+        section.innerHTML = `
+          <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">${cat}</h2>
+          <div id="category-${cat}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4"></div>
+        `;
+        menuSections.appendChild(section);
+      });
+
+      // Ürünleri yükle
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      products.forEach(product => {
+        const wrapper = document.getElementById(`category-${product.category}`);
+        if (wrapper) {
+          const card = document.createElement("div");
+          card.className = "bg-white text-black dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-md flex gap-4";
+          card.setAttribute("data-search-item", "");
+          card.innerHTML = `
+            <img src="${product.image || 'https://via.placeholder.com/75'}"
+              alt="${product.name}"
+              class="w-[75px] h-[75px] rounded-full object-cover flex-shrink-0" />
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold mb-1">${product.name}</h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-1">${product.price} TL</p>
+              ${product.description ? `<p class="text-sm text-gray-500 dark:text-gray-400">${product.description}</p>` : ""}
+            </div>
+          `;
+          wrapper.appendChild(card);
+        }
+      });
+
+      // Arama
+      document.getElementById("searchInput").addEventListener("input", function () {
+        const search = this.value.toLowerCase();
+        document.querySelectorAll("[data-search-item]").forEach(item => {
+          item.style.display = item.textContent.toLowerCase().includes(search) ? "flex" : "none";
+        });
+      });
+
+      // Kategori butonları ile filtreleme + aktif görünüm
+      document.querySelectorAll('.cat-btn').forEach(button => {
+        button.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href").replace("#", "");
+
+          // Kategorileri filtrele
+          categories.forEach(cat => {
+            const section = document.getElementById(`cat-${cat}`);
+            section.style.display = (section.id === targetId) ? "block" : "none";
+          });
+
+          // Aktif buton görünümü
+          document.querySelectorAll(".cat-btn").forEach(btn => btn.classList.remove("active"));
+          this.classList.add("active");
+
+          // Scroll
+          document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
