@@ -41,8 +41,8 @@ Bu proje, Da&Sa Cafe Game için mobil uyumlu, dinamik ve yönetilebilir bir QR m
 
 ## 🧑‍💻 Geliştirici
 
-- [@seninkullanici](https://github.com/seninkullanici)
-- 📧 İletişim: mucahit@example.com (değiştir)
+- [@Mucahitt9](https://github.com/Mucahitt9)
+- 📧 İletişim: mucahittastan02@gmail.com (değiştir)
 
 ---
 
