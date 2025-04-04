@@ -26,23 +26,20 @@ Bu proje, Da&Sa Cafe Game için mobil uyumlu, dinamik ve yönetilebilir bir QR m
 
 > Admin Panel için kullanıcı bilgileri:
 
-
-
-
 ## 🌍 Canlı Demo
 
-📲 Menü Sayfası: [https://seninkullanici.github.io/dasacafe](https://seninkullanici.github.io/dasacafe)
+📲 Menü Sayfası: [https://mucahitt9.github.io/dasacafe-menu](https://mucahitt9.github.io/dasacafe-menu)
 
 🛠 Admin Panel: `login.html` üzerinden giriş yapılır.
 
 ## 📷 QR Kod ile Aç
 
-![QR Kod](https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://seninkullanici.github.io/dasacafe)
+![QR Kod](https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://mucahitt9.github.io/dasacafe-menu)
 
 ## 🧑‍💻 Geliştirici
 
 - [@Mucahitt9](https://github.com/Mucahitt9)
-- 📧 İletişim: mucahittastan02@gmail.com (değiştir)
+- 📧 İletişim: <mucahittastan02@gmail.com> (değiştir)
 
 ---
 

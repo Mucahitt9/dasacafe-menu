@@ -86,33 +86,36 @@
     </p>
   </footer>
 
-  <!-- JS -->
+  <!-- JS Code Çalışma Haritası -->
   <script>
+    // Menüdeki kategorilerin listesi
     const categories = ['Yemek', 'Tatlı', 'Sıcak İçecek', 'Soğuk İçecek', 'Nargile', 'Oyun'];
-
-    // Tema
+  
+    // 🌙 Tema değiştirme butonuna tıklanınca çalışır
     document.getElementById("themeToggle").addEventListener("click", () => {
-      document.documentElement.classList.toggle("dark");
-      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+      document.documentElement.classList.toggle("dark"); // dark sınıfını <html> elementine ekler/çıkarır
+      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light"); // Tercihi kaydeder
     });
-
-    // Kapanış kontrolü
+  
+    // 🕓 Kapanış kontrolü – saat 10:00'dan önce ya da 20:00'dan sonra menü ve kategori görünmez
     const now = new Date();
     const hour = now.getHours();
     if (hour < 10 || hour > 20) {
-      document.getElementById("statusMessage").classList.remove("hidden");
-      document.getElementById("statusMessage").textContent = "🔴 Şu anda kapalıyız. Açılış: 10:00";
+      document.getElementById("statusMessage").classList.remove("hidden"); // "Kapalı" mesajını göster
+      document.getElementById("statusMessage").textContent = "🔴 Şu anda kapaliyiz. Açiliş: 10:00";
+      document.getElementById("categoryMenu").classList.add("hidden");     // Menü çubuğunu gizle
+      document.getElementById("menuSections").classList.add("hidden");     // Menü içeriklerini gizle
     }
-
-    // Sayfa yüklenince ürün ve kategori işlemleri
+  
+    // 🚀 Sayfa tamamen yüklendiğinde bu blok çalışır
     window.addEventListener("DOMContentLoaded", () => {
       const menuSections = document.getElementById("menuSections");
-
-      // Tema ayarla
+  
+      // 🌙 Karanlık tema tercihi varsa uygula
       const theme = localStorage.getItem("theme");
       if (theme === "dark") document.documentElement.classList.add("dark");
-
-      // Kategorileri oluştur
+  
+      // 🔁 Her kategori için bir <section> HTML bloğu oluşturur
       categories.forEach(cat => {
         const section = document.createElement("section");
         section.id = `cat-${cat}`;
@@ -121,17 +124,21 @@
           <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">${cat}</h2>
           <div id="category-${cat}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4"></div>
         `;
-        menuSections.appendChild(section);
+        menuSections.appendChild(section); // Oluşturulan bölümü DOM'a ekler
       });
-
-      // Ürünleri yükle
+  
+      // 🛒 localStorage'dan ürün verilerini alır
       const products = JSON.parse(localStorage.getItem("products")) || [];
+  
+      // 📦 Her ürünü ilgili kategori bölümüne ekler
       products.forEach(product => {
         const wrapper = document.getElementById(`category-${product.category}`);
         if (wrapper) {
           const card = document.createElement("div");
           card.className = "bg-white text-black dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-md flex gap-4";
-          card.setAttribute("data-search-item", "");
+          card.setAttribute("data-search-item", ""); // Arama işlemleri için işaretleme
+  
+          // Ürün kartının içeriği
           card.innerHTML = `
             <img src="${product.image || 'https://via.placeholder.com/75'}"
               alt="${product.name}"
@@ -142,39 +149,40 @@
               ${product.description ? `<p class="text-sm text-gray-500 dark:text-gray-400">${product.description}</p>` : ""}
             </div>
           `;
-          wrapper.appendChild(card);
+          wrapper.appendChild(card); // Ürünü DOM'a ekler
         }
       });
-
-      // Arama
+  
+      // 🔍 Arama kutusuna yazıldıkça ürünler filtrelenir
       document.getElementById("searchInput").addEventListener("input", function () {
         const search = this.value.toLowerCase();
         document.querySelectorAll("[data-search-item]").forEach(item => {
           item.style.display = item.textContent.toLowerCase().includes(search) ? "flex" : "none";
         });
       });
-
-      // Kategori butonları ile filtreleme + aktif görünüm
+  
+      // 🧭 Kategori butonları: tıklanan kategoriye ait ürünleri gösterir, diğerlerini gizler
       document.querySelectorAll('.cat-btn').forEach(button => {
         button.addEventListener("click", function (e) {
           e.preventDefault();
+  
           const targetId = this.getAttribute("href").replace("#", "");
-
-          // Kategorileri filtrele
+  
+          // Tüm kategorileri gizle, yalnızca seçileni göster
           categories.forEach(cat => {
             const section = document.getElementById(`cat-${cat}`);
             section.style.display = (section.id === targetId) ? "block" : "none";
           });
-
-          // Aktif buton görünümü
+  
+          // Aktif buton vurgulaması
           document.querySelectorAll(".cat-btn").forEach(btn => btn.classList.remove("active"));
           this.classList.add("active");
-
-          // Scroll
+  
+          // İlgili bölüme kaydır
           document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
         });
       });
     });
-  </script>
+  </script>  
 </body>
 </html>
