@@ -102,7 +102,7 @@
 
     const now = new Date();
     const hour = now.getHours();
-    if (hour < 10 || hour > 22) {
+    if (hour < 10 || hour > 26) {
       document.getElementById("statusMessage").classList.remove("hidden");
       document.getElementById("statusMessage").textContent = "🔴 Şu anda kapalıyız. Açılış: 10:00";
     }
