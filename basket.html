@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Siparişi Onayla</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <style>
+    body { transition: all 0.3s ease; }
+    .dark .bg-section { background-color: #1f2937; }
+  </style>
+</head>
+<body class="bg-gray-100 text-black dark:bg-gray-900 dark:text-white max-w-md mx-auto p-4 pb-24">
+
+  <!-- Üst Menü -->
+  <div class="flex justify-between items-center mb-4">
+    <a href="index.html" class="text-xl">←</a>
+    <h1 class="font-bold text-lg">Siparişi Onayla</h1>
+    <button id="themeToggle" class="text-sm bg-gray-700 text-white px-2 py-1 rounded hover:bg-gray-600">🌗</button>
+  </div>
+
+  <!-- Masa Seçimi -->
+  <div class="mb-4 flex justify-between items-center text-sm">
+    <label>Masa No: <span id="tableNumber" class="font-bold text-lg text-orange-500">—</span></label>
+    <input type="number" id="tableInput" min="1" max="99" placeholder="Masa No" class="w-24 px-2 py-1 rounded bg-white text-black text-sm">
+  </div>
+
+  <!-- Sepetteki Ürünler -->
+  <div id="basketList" class="space-y-4 mb-6"></div>
+
+  <!-- Sipariş Notu -->
+  <div class="mb-6">
+    <label for="note" class="block font-semibold mb-1">Sipariş Notu</label>
+    <textarea id="note" maxlength="100" placeholder="Örn: az şekerli, peçete lütfen..." class="w-full bg-gray-100 dark:bg-gray-800 text-sm p-3 rounded outline-none resize-none" rows="3"></textarea>
+    <div class="text-right text-xs text-gray-400"><span id="charCount">0</span>/100</div>
+  </div>
+
+  <!-- Alt Sabit Bar -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 p-4 border-t border-gray-300 dark:border-gray-700 max-w-md mx-auto flex justify-between items-center z-10">
+    <div class="text-sm">Toplam: <span id="totalPrice" class="font-bold text-orange-500">0 TL</span></div>
+    <button onclick="sendOrder()" class="bg-orange-500 text-white px-4 py-2 rounded font-semibold">Siparişi Gönder</button>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const themeBtn = document.getElementById("themeToggle");
+    themeBtn.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+    });
+
+    document.getElementById("note").addEventListener("input", () => {
+      document.getElementById("charCount").textContent = document.getElementById("note").value.length;
+    });
+
+    // Sayfa açılınca
+    window.addEventListener("DOMContentLoaded", () => {
+      // Tema uygulaması
+      const theme = localStorage.getItem("theme");
+      if (theme === "dark") document.documentElement.classList.add("dark");
+
+      // Masa no
+      const urlTable = new URLSearchParams(window.location.search).get("table");
+      const storedTable = localStorage.getItem("tableNo") || urlTable || "—";
+      document.getElementById("tableNumber").textContent = storedTable;
+      document.getElementById("tableInput").value = storedTable;
+      localStorage.setItem("tableNo", storedTable);
+
+      renderBasket();
+    });
+
+    function renderBasket() {
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      const basketList = document.getElementById("basketList");
+      const totalPriceEl = document.getElementById("totalPrice");
+      basketList.innerHTML = "";
+
+      let total = 0;
+
+      if (basket.length === 0) {
+        basketList.innerHTML = `<p class="text-gray-500 text-sm">Sepetiniz boş.</p>`;
+        totalPriceEl.textContent = "0 TL";
+        return;
+      }
+
+      basket.forEach((item, index) => {
+        total += item.price * item.quantity;
+
+        const div = document.createElement("div");
+        div.className = "flex gap-4 items-start bg-white dark:bg-gray-800 p-3 rounded shadow";
+
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded object-cover" />
+          <div class="flex-1">
+            <p class="font-bold">${item.name}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300">${item.price} TL x ${item.quantity}</p>
+            <div class="flex gap-2 mt-2">
+              <button onclick="changeQty(${index}, -1)" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white px-2 rounded">−</button>
+              <button onclick="changeQty(${index}, 1)" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white px-2 rounded">+</button>
+              <button onclick="removeItem(${index})" class="bg-red-500 text-white px-2 rounded">🗑️</button>
+            </div>
+          </div>
+        `;
+        basketList.appendChild(div);
+      });
+
+      totalPriceEl.textContent = `${total.toFixed(2)} TL`;
+    }
+
+    function changeQty(index, delta) {
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      basket[index].quantity += delta;
+      if (basket[index].quantity < 1) basket[index].quantity = 1;
+      localStorage.setItem("basket", JSON.stringify(basket));
+      renderBasket();
+    }
+
+    function removeItem(index) {
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      basket.splice(index, 1);
+      localStorage.setItem("basket", JSON.stringify(basket));
+      renderBasket();
+    }
+
+    function sendOrder() {
+      const tableNo = document.getElementById("tableInput").value.trim();
+      if (!tableNo || tableNo === "—") return alert("Lütfen masa numarasını girin.");
+
+      const note = document.getElementById("note").value.trim();
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      if (basket.length === 0) return alert("Sepetiniz boş.");
+
+      let total = 0;
+      const messageLines = [`🍽️ *Sipariş*`, `📍 Masa: ${tableNo}`, ``];
+      basket.forEach(item => {
+        const line = `• ${item.name} x${item.quantity} - ${item.price * item.quantity} TL`;
+        total += item.price * item.quantity;
+        messageLines.push(line);
+      });
+
+      messageLines.push(``, `💬 Not: ${note || "—"}`, `💰 Toplam: ${total.toFixed(2)} TL`);
+
+      // Sipariş bilgisi kaydet
+      const orderSummary = {
+        table: tableNo,
+        totalItems: basket.reduce((t, i) => t + i.quantity, 0),
+        totalPrice: total
+      };
+      localStorage.setItem("lastOrder", JSON.stringify(orderSummary));
+
+      // ✅ Siparişe ait ürünleri de kaydet (detay için)
+  localStorage.setItem("basketHistory", JSON.stringify(basket));
+
+      // WhatsApp bağlantısı
+      const fullMessage = encodeURIComponent(messageLines.join('\n'));
+      const phoneNumber = "905533345109"; // 👈 numaranızı girin
+      const waLink = `https://wa.me/${phoneNumber}?text=${fullMessage}`;
+      window.open(waLink, "_blank");
+
+      // Yönlendir ve temizle
+      localStorage.removeItem("basket");
+      setTimeout(() => window.location.href = "order-report.html", 1500);
+    }
+  </script>
+</body>
+</html>

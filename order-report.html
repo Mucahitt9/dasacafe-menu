@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sipariş Özeti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f3f4f6] text-gray-900 p-6 font-sans min-h-screen">
+
+  <!-- Başlık -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold">✅ Siparişiniz Alındı</h1>
+    <p class="text-sm text-gray-500">Aşağıda sipariş özetinizi bulabilirsiniz.</p>
+  </div>
+
+  <!-- Genel Sipariş Bilgileri -->
+  <div class="grid gap-4 mb-6">
+    <div class="bg-green-100 p-4 rounded-xl flex justify-between items-center shadow">
+      <div>
+        <p class="text-sm text-gray-700">💰 Toplam Tutar</p>
+        <h2 class="text-2xl font-bold text-green-700" id="totalPrice">₺0</h2>
+      </div>
+      <div class="text-green-600 text-sm">✔ Başarılı</div>
+    </div>
+
+    <div class="bg-yellow-100 p-4 rounded-xl flex justify-between items-center shadow">
+      <div>
+        <p class="text-sm text-gray-700">🛒 Toplam Ürün</p>
+        <h2 class="text-2xl font-bold text-yellow-700" id="totalItems">0</h2>
+      </div>
+      <div class="text-yellow-600 text-sm">Adet</div>
+    </div>
+
+    <div class="bg-indigo-100 p-4 rounded-xl flex justify-between items-center shadow">
+      <div>
+        <p class="text-sm text-gray-700">📍 Masa</p>
+        <h2 class="text-2xl font-bold text-indigo-700" id="tableNo">—</h2>
+      </div>
+      <div class="text-indigo-600 text-sm">Masa No</div>
+    </div>
+  </div>
+
+  <!-- Ürün Listesi -->
+  <div class="mb-10">
+    <h2 class="text-lg font-semibold mb-2">🧾 Sipariş Detayı</h2>
+    <div id="productList" class="space-y-3">
+      <!-- Ürünler burada listelenecek -->
+    </div>
+  </div>
+
+  <!-- Menüye Dön -->
+  <div class="text-center mt-10">
+    <a href="index.html" class="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-lg font-semibold shadow transition">
+      🔙 Menüye Dön
+    </a>
+  </div>
+
+  <script>
+    const order = JSON.parse(localStorage.getItem("lastOrder")) || {};
+    const products = JSON.parse(localStorage.getItem("basketHistory")) || [];
+
+    // Genel bilgiler
+    document.getElementById("totalPrice").textContent = `₺${(order.totalPrice || 0).toFixed(2)}`;
+    document.getElementById("totalItems").textContent = order.totalItems || "0";
+    document.getElementById("tableNo").textContent = order.table || "—";
+
+    // Ürün listesi
+    const productList = document.getElementById("productList");
+    if (products.length === 0) {
+      productList.innerHTML = `<p class="text-sm text-gray-500">Siparişe ait ürün bilgisi bulunamadı.</p>`;
+    } else {
+      products.forEach(product => {
+        const item = document.createElement("div");
+        item.className = "bg-white rounded-lg shadow p-3 flex items-start gap-4";
+
+        item.innerHTML = `
+          <img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded">
+          <div class="flex-1">
+            <h3 class="font-bold text-sm mb-1">${product.name}</h3>
+            <p class="text-sm text-gray-600">${product.price} TL x ${product.quantity} adet</p>
+            <p class="text-sm font-semibold mt-1 text-orange-500">Toplam: ${(product.price * product.quantity).toFixed(2)} TL</p>
+          </div>
+        `;
+        productList.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>

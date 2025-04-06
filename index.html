@@ -40,10 +40,15 @@
   </div>
 
   <!-- Üst Menü -->
-  <div class="flex flex-wrap justify-between px-6 pt-4 items-center gap-4">
+  <div class="flex flex-wrap justify-between items-center px-4 pt-4 mb-4 gap-4 relative">
     <a href="login.html" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white font-semibold">Admin Panel</a>
+
+    <a href="basket.html" class="relative">
+      <span class="text-2">🛒Sepet</span>
+      <span id="basketCount" class="absolute -top-2 -right-3 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">0</span>
+    </a>
+
     <button id="themeToggle" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600">🌗 Tema</button>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://seninmenulinkin.com" alt="QR Kod" class="w-10 h-10 rounded-full ml-auto" />
   </div>
 
   <!-- Kapalı Mesajı -->
@@ -58,7 +63,7 @@
   <h1 class="text-3xl text-center border-b-2 border-yellow-400 pb-2 mb-8">Da&Sa CAFE GAME MENÜ</h1>
 
   <!-- Sabit Mobil Kategori Menüsü -->
-  <div id="categoryMenu" class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 z-40 flex justify-around items-center py-2 sm:static sm:justify-center sm:gap-2 sm:px-4 sm:py-3 sm:mb-6 text-sm font-semibold">
+  <div id="categoryMenu" class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 z-40 flex justify-around items-center py-2 sm:static sm:justify-center sm:gap-2 sm:px-4 sm:py-3 sm:mb-6 text-sm font-semibold overflow-x-auto">
     <a href="#cat-Yemek" class="cat-btn px-3 py-1 bg-yellow-300 hover:bg-yellow-400 rounded">🍔 Yemek</a>
     <a href="#cat-Tatlı" class="cat-btn px-3 py-1 bg-pink-200 hover:bg-pink-300 rounded">🍰 Tatlı</a>
     <a href="#cat-Sıcak İçecek" class="cat-btn px-3 py-1 bg-orange-200 hover:bg-orange-300 rounded">☕ Sıcak</a>
@@ -86,36 +91,28 @@
     </p>
   </footer>
 
-  <!-- JS Code Çalışma Haritası -->
+  <!-- JS -->
   <script>
-    // Menüdeki kategorilerin listesi
     const categories = ['Yemek', 'Tatlı', 'Sıcak İçecek', 'Soğuk İçecek', 'Nargile', 'Oyun'];
-  
-    // 🌙 Tema değiştirme butonuna tıklanınca çalışır
+
     document.getElementById("themeToggle").addEventListener("click", () => {
-      document.documentElement.classList.toggle("dark"); // dark sınıfını <html> elementine ekler/çıkarır
-      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light"); // Tercihi kaydeder
+      document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
     });
-  
-    // 🕓 Kapanış kontrolü – saat 10:00'dan önce ya da 20:00'dan sonra menü ve kategori görünmez
+
     const now = new Date();
     const hour = now.getHours();
-    if (hour < 10 || hour > 20) {
-      document.getElementById("statusMessage").classList.remove("hidden"); // "Kapalı" mesajını göster
-      document.getElementById("statusMessage").textContent = "🔴 Şu anda kapaliyiz. Açiliş: 10:00";
-      document.getElementById("categoryMenu").classList.add("hidden");     // Menü çubuğunu gizle
-      document.getElementById("menuSections").classList.add("hidden");     // Menü içeriklerini gizle
+    if (hour < 10 || hour > 22) {
+      document.getElementById("statusMessage").classList.remove("hidden");
+      document.getElementById("statusMessage").textContent = "🔴 Şu anda kapalıyız. Açılış: 10:00";
     }
-  
-    // 🚀 Sayfa tamamen yüklendiğinde bu blok çalışır
+
     window.addEventListener("DOMContentLoaded", () => {
-      const menuSections = document.getElementById("menuSections");
-  
-      // 🌙 Karanlık tema tercihi varsa uygula
       const theme = localStorage.getItem("theme");
       if (theme === "dark") document.documentElement.classList.add("dark");
-  
-      // 🔁 Her kategori için bir <section> HTML bloğu oluşturur
+
+      const menuSections = document.getElementById("menuSections");
+
       categories.forEach(cat => {
         const section = document.createElement("section");
         section.id = `cat-${cat}`;
@@ -124,65 +121,76 @@
           <h2 class="text-2xl text-center border-b border-yellow-400 pb-1 mb-4">${cat}</h2>
           <div id="category-${cat}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4"></div>
         `;
-        menuSections.appendChild(section); // Oluşturulan bölümü DOM'a ekler
+        menuSections.appendChild(section);
       });
-  
-      // 🛒 localStorage'dan ürün verilerini alır
+
       const products = JSON.parse(localStorage.getItem("products")) || [];
-  
-      // 📦 Her ürünü ilgili kategori bölümüne ekler
       products.forEach(product => {
         const wrapper = document.getElementById(`category-${product.category}`);
         if (wrapper) {
           const card = document.createElement("div");
           card.className = "bg-white text-black dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-md flex gap-4";
-          card.setAttribute("data-search-item", ""); // Arama işlemleri için işaretleme
-  
-          // Ürün kartının içeriği
+          card.setAttribute("data-search-item", "");
+
           card.innerHTML = `
             <img src="${product.image || 'https://via.placeholder.com/75'}"
-              alt="${product.name}"
-              class="w-[75px] h-[75px] rounded-full object-cover flex-shrink-0" />
+              alt="${product.name}" class="w-[75px] h-[75px] rounded-full object-cover flex-shrink-0" />
             <div class="flex-1">
               <h3 class="text-lg font-semibold mb-1">${product.name}</h3>
               <p class="text-gray-600 dark:text-gray-300 mb-1">${product.price} TL</p>
-              ${product.description ? `<p class="text-sm text-gray-500 dark:text-gray-400">${product.description}</p>` : ""}
+              ${product.description ? `<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">${product.description}</p>` : ""}
+              <button onclick='addToBasket(${JSON.stringify(product)})'
+                class="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1 rounded">+ Sepete Ekle</button>
             </div>
           `;
-          wrapper.appendChild(card); // Ürünü DOM'a ekler
+          wrapper.appendChild(card);
         }
       });
-  
-      // 🔍 Arama kutusuna yazıldıkça ürünler filtrelenir
+
+      updateBasketCount();
+
       document.getElementById("searchInput").addEventListener("input", function () {
         const search = this.value.toLowerCase();
         document.querySelectorAll("[data-search-item]").forEach(item => {
           item.style.display = item.textContent.toLowerCase().includes(search) ? "flex" : "none";
         });
       });
-  
-      // 🧭 Kategori butonları: tıklanan kategoriye ait ürünleri gösterir, diğerlerini gizler
+
       document.querySelectorAll('.cat-btn').forEach(button => {
         button.addEventListener("click", function (e) {
           e.preventDefault();
-  
           const targetId = this.getAttribute("href").replace("#", "");
-  
-          // Tüm kategorileri gizle, yalnızca seçileni göster
+
           categories.forEach(cat => {
             const section = document.getElementById(`cat-${cat}`);
             section.style.display = (section.id === targetId) ? "block" : "none";
           });
-  
-          // Aktif buton vurgulaması
+
           document.querySelectorAll(".cat-btn").forEach(btn => btn.classList.remove("active"));
           this.classList.add("active");
-  
-          // İlgili bölüme kaydır
           document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
         });
       });
     });
-  </script>  
+
+    function addToBasket(product) {
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      const existing = basket.find(item => item.name === product.name);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        basket.push({ ...product, quantity: 1 });
+      }
+      localStorage.setItem("basket", JSON.stringify(basket));
+      updateBasketCount();
+    }
+
+    function updateBasketCount() {
+      const basket = JSON.parse(localStorage.getItem("basket")) || [];
+      const count = basket.reduce((total, item) => total + item.quantity, 0);
+      const el = document.getElementById("basketCount");
+      if (el) el.textContent = count;
+    }
+  </script>
 </body>
 </html>
